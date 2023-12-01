@@ -32,6 +32,9 @@ int should_stop = 0;
 int log_fd = -1; 
 int button_fd;
 int exit_flag = 0;
+int id = -1;
+char* host = NULL;
+int port_no = -1;
 
 
 void shutdown_program() {
@@ -194,6 +197,8 @@ int main(int argc, char *argv[]) {
         { "scale",  required_argument, NULL,  's' },
         { "period", required_argument, NULL,  'p' },
      { "log", required_argument, NULL, 'l'},
+    { "id", required_argument, NULL, 'i'},
+    { "host", required_argument, NULL, 'h'},
         { 0, 0, 0, 0}
     };
 
@@ -217,6 +222,12 @@ int main(int argc, char *argv[]) {
             case 'l':
                 log_name = optarg;
                 break;
+            case 'i':
+                id = atoi(optarg);
+                break;
+            case 'h':
+                host = optarg;
+                break;
             default:
                 fprintf(stderr, "Use the options --iterations --threads");
                 exit(1);
@@ -230,10 +241,63 @@ int main(int argc, char *argv[]) {
             fprintf(stderr, "Opening the log file failed %s \n", strerror(errno));
             exit(1);
         }
+    } else {
+        fprintf(stderr, "You are required to give a log file \n");
+        exit(1);
     }
-    
+
+    if(host == NULL) {
+        fprintf(stderr, "You are required to give a host \n");
+        exit(1);
+    }
+
+    if(id == -1) {
+        fprintf(stderr, "You are required to give a ID number \n");
+        exit(1);
+    }
+
+    if(optind  == (argc -1)) {
+        port_no = atoi(argv[(argc-1)]);
+        printf("The port number is %d \n", port_no);
+    } else {
+        fprintf(stderr, "The wrong number of non-option arguments are given \n");
+        exit(1);
+    }
 
     initalize_hardware();
+
+    int socketfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (socketfd < 0) {
+        fprintf(stderr, "ERROR opening socket due to error %s \n", strerror(errno));
+        exit(1);
+    }
+
+
+
+    struct sockaddr_in serv_addr;
+    struct hostent *server = gethostbyname(host);
+    if(server == NULL) {
+        fprintf(stderr, "Host failed \n ");
+        exit(1);
+    }
+
+
+    bzero((char *) &serv_addr, sizeof(serv_addr));
+    serv_addr.sin_family = AF_INET;
+    bcopy((char *)server->h_addr, 
+         (char *)&serv_addr.sin_addr.s_addr,
+         server->h_length);
+    serv_addr.sin_port = htons(port_no);
+
+    printf("hi1\n");
+    
+    if (connect(socketfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)  {
+        fprintf(stderr, "ERROR accepting socket due to error %s \r\n", strerror(errno));
+        exit(1);
+    }
+
+    printf("hi1\n");
+
 
     pthread_t temp_thread;
     int rc = pthread_create(&temp_thread, NULL, thread_temperature_action, NULL);

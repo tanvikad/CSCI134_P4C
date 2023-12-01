@@ -35,6 +35,7 @@ int exit_flag = 0;
 int id = -1;
 char* host = NULL;
 int port_no = -1;
+int socketfd = -1;
 
 
 void shutdown_program() {
@@ -91,8 +92,11 @@ void* thread_temperature_action() {
         time( &rawtime );
         info = localtime( &rawtime );
         char buffer[50];
-        sprintf(buffer, "%d:%d:%d %0.1f\n", info->tm_hour, info->tm_min, info->tm_sec, temperature);
-        if(should_stop ==0) fprintf(stdout, buffer);
+        sprintf(buffer, "%02d:%02d:%02d %0.1f\n", info->tm_hour, info->tm_min, info->tm_sec, temperature);
+        if(should_stop ==0) {
+            // fprintf(stdout, buffer);
+            write(socketfd, buffer, strlen(buffer));
+        }
         if(log_fd != -1 && should_stop==0) {
             write(log_fd, buffer, strlen(buffer));
         }
@@ -266,7 +270,7 @@ int main(int argc, char *argv[]) {
 
     initalize_hardware();
 
-    int socketfd = socket(AF_INET, SOCK_STREAM, 0);
+    socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (socketfd < 0) {
         fprintf(stderr, "ERROR opening socket due to error %s \n", strerror(errno));
         exit(1);
@@ -289,14 +293,16 @@ int main(int argc, char *argv[]) {
          server->h_length);
     serv_addr.sin_port = htons(port_no);
 
-    printf("hi1\n");
     
     if (connect(socketfd,(struct sockaddr *)&serv_addr,sizeof(serv_addr)) < 0)  {
         fprintf(stderr, "ERROR accepting socket due to error %s \r\n", strerror(errno));
         exit(1);
     }
 
-    printf("hi1\n");
+    char id_buffer[30];
+    snprintf(id_buffer, 30, "ID=%d\n", id);
+    write(socketfd, id_buffer, strlen(id_buffer));
+    write(log_fd, id_buffer, strlen(id_buffer));
 
 
     pthread_t temp_thread;
@@ -311,8 +317,10 @@ int main(int argc, char *argv[]) {
 
     poll_fds[1].fd = button_fd;
     poll_fds[1].events = POLLIN;
-    poll_fds[0].fd = 0;
+    poll_fds[0].fd = socketfd;
     poll_fds[0].events = POLLIN;
+
+    
 
     char incomplete_buffer[100];
     int pointer_in_buffer = 0;

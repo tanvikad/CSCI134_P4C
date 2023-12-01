@@ -1,7 +1,7 @@
-all: lab4b
+all: lab4c
 
-lab4b: lab4b.c
-	gcc -Wall -Wextra -g  lab4b.c -o lab4b -lrobotcontrol -lpthread -lm
+lab4c: lab4c.c
+	gcc -Wall -Wextra -g  lab4c.c -o lab4c -lrobotcontrol -lpthread -lm
 
 clean:
 	rm -f *.o
@@ -11,7 +11,7 @@ clean:
 	rm -f *.txt
 
 dist: 
-	tar -zcvf lab4b-40205638.tar.gz lab4b.c README smoke_test.sh Makefile
+	tar -zcvf lab4c-40205638.tar.gz lab4c.c README smoke_test.sh Makefile
 
 check:
 	./smoke_test.sh

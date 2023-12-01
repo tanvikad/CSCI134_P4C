@@ -359,7 +359,8 @@ int main(int argc, char *argv[]) {
                     info = localtime( &rawtime );
                     char shutdown_buffer[50];
                     sprintf(shutdown_buffer, "%d:%d:%d SHUTDOWN\n", info->tm_hour, info->tm_min, info->tm_sec);
-                    fprintf(stdout, shutdown_buffer);
+                    // fprintf(stdout, shutdown_buffer);
+                    write(socketfd, shutdown_buffer, strlen(shutdown_buffer));
                     if(log_fd != -1) {
                         write(log_fd, shutdown_buffer, strlen(shutdown_buffer));
                     }

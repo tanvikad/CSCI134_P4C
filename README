@@ -1,0 +1,11 @@
+NAME: Tanvika Dasari
+EMAIL: tdasari@hmc.edu
+ID: 40205638
+
+Worked with Eric Chen and Christopher Herrera
+
+Description of files:
+Makefile - Commands to run the program and to run smoke test
+lab4b.c - Contains the code to read from a temperature sensor and the terminal 
+README - Contains description of the code
+./smoke_test.sh - Executable that runs a smoke test on the log file

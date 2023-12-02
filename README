@@ -1,3 +1,11 @@
-
+NAME: Tanvika Dasari
+EMAIL: tdasari@hmc.edu
+ID: 40205638
 
 Referenced https://www.openssl.org/docs/manmaster/man7/ossl-guide-tls-client-block.html
+
+Description of files:
+Makefile - Commands to run the program
+lab4c_tcp.c - Contains the code to make the tcp transactions
+lab4c_tls.c - Contain the code ot make the tls transactions
+README - Contains description of the code

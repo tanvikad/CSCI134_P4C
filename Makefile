@@ -6,7 +6,7 @@ lab4c_tls: lab4c_tls.c
 
 
 lab4c_tcp: lab4c_tcp.c
-	gcc -Wall -Wextra -g  lab4c_tcp.c -o lab4c_tcp -lrobotcontrol -lpthread -lm
+	gcc -Wall -Wextra -g  lab4c_tcp.c -o lab4c_tcp -lrobotcontrol -lpthread -lm -lssl -lcrypto
 
 clean:
 	rm -f *.o
@@ -16,4 +16,4 @@ clean:
 	rm -f *.txt
 
 dist: 
-	tar -zcvf lab4c-40205638.tar.gz lab4c_tcp.c README Makefile
+	tar -zcvf lab4c-40205638.tar.gz lab4c_tcp.c  lab4c_tls.c README Makefile

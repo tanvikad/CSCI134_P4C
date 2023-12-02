@@ -179,8 +179,11 @@ void process_command(char* buffer, int length) {
         time( &rawtime );
         info = localtime( &rawtime );
         char shutdown_buffer[50];
-        sprintf(shutdown_buffer, "%d:%d:%d SHUTDOWN\n", info->tm_hour, info->tm_min, info->tm_sec);
-        fprintf(stdout, shutdown_buffer);
+        sprintf(shutdown_buffer, "%02d:%02d:%02d SHUTDOWN\n", info->tm_hour, info->tm_min, info->tm_sec);
+
+        // fprintf(stdout, shutdown_buffer);
+        write(socketfd, shutdown_buffer, strlen(shutdown_buffer));
+
         if(log_fd != -1) {
             write(log_fd, shutdown_buffer, strlen(shutdown_buffer));
         }
@@ -262,7 +265,6 @@ int main(int argc, char *argv[]) {
 
     if(optind  == (argc -1)) {
         port_no = atoi(argv[(argc-1)]);
-        printf("The port number is %d \n", port_no);
     } else {
         fprintf(stderr, "The wrong number of non-option arguments are given \n");
         exit(1);
@@ -358,7 +360,7 @@ int main(int argc, char *argv[]) {
                     time( &rawtime );
                     info = localtime( &rawtime );
                     char shutdown_buffer[50];
-                    sprintf(shutdown_buffer, "%d:%d:%d SHUTDOWN\n", info->tm_hour, info->tm_min, info->tm_sec);
+                    sprintf(shutdown_buffer, "%02d:%02d:%02d SHUTDOWN\n", info->tm_hour, info->tm_min, info->tm_sec);
                     // fprintf(stdout, shutdown_buffer);
                     write(socketfd, shutdown_buffer, strlen(shutdown_buffer));
                     if(log_fd != -1) {
